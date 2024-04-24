@@ -1,0 +1,490 @@
+/* google font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+
+/* layout */
+:root {
+    --primary: #1aac83;
+    --error: #e7195a;
+}
+
+/* body */ 
+body {
+    background: #f1f1f1;
+    margin: 0;
+    font-family: "Poppins";
+    overflow-x: hidden;
+}
+
+header {
+    background: #fff;
+}
+  
+header .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+  
+header a {
+    color: #333;
+    text-decoration: none;
+}
+
+.pages{
+    max-width: 1400px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+/* side navbar */ 
+.sidebar {
+    width: 200px;
+    background-color: #fff;
+    color: #000000;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: -200px;
+    transition: left 0.3s ease;
+}
+
+.sidebar a {
+    color: var(--error);
+}
+  
+.sidebar.active {
+    left: 0;
+}
+  
+.sidebar nav {
+    padding: 20px;
+}
+
+.sidebar-toggle {
+    color: #555;
+    cursor: pointer;
+}
+  
+/* navbar */ 
+nav {
+    display: flex;
+    align-items: center;
+}
+nav a {
+    margin-left: 40px;
+    color: var(--primary);
+    font-size: 20px;
+}
+
+nav button  {
+    background: #fff;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: "Poppins";
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 10px;
+}
+
+.user button {
+    padding: 10px;
+    background: #ffefef;
+    border: 2px solid var(--error);
+    color: var(--error);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 20px;
+}
+
+.user a{
+    padding: 10px;
+    background: #ffefef;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 25px;
+}
+
+/* Footer */ 
+footer{
+    color: #777;
+    text-align: center;
+    margin: 80px auto 20px;
+}
+
+footer a {
+    color: var(--primary);
+}
+
+/* homepage */
+.home {
+    display: flex;
+    align-items: center;
+}
+
+.home img{
+    width: 250px;
+    margin-right: 40px;
+}
+
+/* etages */
+
+.etagesPage{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 100px;
+}
+
+.etages h2 {
+    color: #333;
+}
+
+.etage-detail {
+    background: #fff;
+    border-radius: 4px;
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+  
+.etage-detail h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    color: var(--primary);
+}
+  
+.etage-detail p {
+    margin: 0;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+  
+.etage-detail span.delete {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: #f1f1f1;
+    padding: 6px;
+    border-radius: 50%;
+    color: #333;
+}
+  
+.etage-detail a {
+    text-decoration: none;
+} 
+
+/* cartes */ 
+.cartesPages {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 100px;
+}
+
+.cartes h2 {
+    color: #333;
+}
+
+.carte-details {
+    background: #fff;
+    border-radius: 4px;
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+  
+.carte-details h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    color: var(--primary);
+}
+  
+.carte-details p {
+    margin: 0;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+.carte-details-update p{
+    display: flex;
+    align-items: center;
+}
+  
+.carte-details span.delete {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: #f1f1f1;
+    padding: 6px;
+    border-radius: 50%;
+    color: #333;
+}
+  
+.carte-details a {
+    text-decoration: none;
+}
+
+/* lampes */
+.lampesPages {
+    margin: 0 auto;
+    text-align: left; 
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 100px;
+}
+
+.lampes h2 {
+    color: #333;
+}
+
+.lampe-detail {
+    position: relative; /* Add this line to enable positioning */
+    background: #fff;
+    border-radius: 4px;
+    margin: 20px;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+    width: 400px; 
+    height: 210px; 
+    display: inline-block; 
+    vertical-align: top; 
+}
+  
+.lampe-detail h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    color: var(--primary);
+}
+  
+.lampe-detail p {
+    margin: 0;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+  
+.lampe-detail span.delete {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: #f1f1f1;
+    padding: 6px;
+    border-radius: 50%;
+    color: #333;
+}
+  
+.lampe-detail a {
+    text-decoration: none;
+} 
+
+.buttons{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* stores */ 
+.storesPage {
+    margin: 0 auto;
+    text-align: left; 
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 100px;
+}
+
+.stores h2 {
+    color: #333;
+}
+
+.store-detail {
+    position: relative; /* Add this line to enable positioning */
+    background: #fff;
+    border-radius: 4px;
+    margin: 20px;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+    width: 400px; 
+    height: 320px; 
+    display: inline-block; 
+    vertical-align: top; 
+}
+  
+.store-detail h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    color: var(--primary);
+}
+  
+.store-detail p {
+    margin: 0;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+  
+.store-detail span.delete {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    background: #f1f1f1;
+    padding: 6px;
+    border-radius: 50%;
+    color: #333;
+}
+  
+.store-detail a {
+    text-decoration: none;
+} 
+
+/* Add form */
+label, input , select {
+    display: block;
+}
+  
+input , select{
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Poppins";
+}
+  
+form button {
+    background: var(--primary);
+    border: 0;
+    color: #fff;
+    padding: 10px;
+    font-family: "Poppins";
+    border-radius: 4px;
+    cursor: pointer;
+}
+  
+div.error {
+    padding: 10px;
+    background: #ffefef;
+    border: 1px solid var(--error);
+    color: var(--error);
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+button.error{
+    padding: 10px;
+    background: #ffefef;
+    border: 1px solid var(--error);
+    color: var(--error);
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 10px;
+    display: flex;
+    align-items: center;
+}
+
+div.info {
+    padding: 10px;
+    background: #ffefef;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+button.info{
+    padding: 10px;
+    background: #ffefef;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 10px;
+    display: flex;
+    align-items: center;
+}
+  
+input.error , select.error {
+    border: 1px solid var(--error);
+}
+
+.LoadingButthon {
+    display: flex;
+    align-items: center;
+}
+  
+.LoadingButthon span {
+    margin-right: 10px; /* Adjust the margin as needed */
+}
+
+/* auth forms */
+form.login {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+}
+  
+.input-wrapper {
+    display: flex;
+    align-items: center;
+}
+  
+.visibility-icon {
+    margin-left: -35px;
+    cursor: pointer;
+}
+
+/* table */ 
+.listeDevices {
+    width: 100%;
+}
+  
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+  
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+  
+th {
+    background-color: #f2f2f2;
+    color: var(--error);
+}
+
+td {
+    width: 33.33%; /* Equal width for both columns */
+}
