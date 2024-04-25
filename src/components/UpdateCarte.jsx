@@ -13,12 +13,12 @@ const UpdateCarte = () => {
     const { carte , dispatch } = useCartesContext();
 
     const [nom,setNom] = useState('');
-    const [adresse_ip,setAdresse] = useState('');
+    const [adresseIp,setAdresse] = useState('');
 
     useEffect(()=>{
         if(carte){
             setNom(carte.nom);
-            setAdresse(carte.adresse_ip);
+            setAdresse(carte.adresseIp);
         }
     },[carte])
 
@@ -28,20 +28,14 @@ const UpdateCarte = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let body = {};
-        if (nom.trim() !== '') {
-            body.nom = nom;
-        }
-        if (adresse_ip.trim() !== '') {
-            body.adresse_ip = adresse_ip;
-        }
+        let body = {adresseIp};
 
         setIsPending(true);
         
         let data;
         const PatchData = async () => {
             try{
-                const res = await fetch(`/api/carte/${carte._id}` , {
+                const res = await fetch(`/api/carte/${carte.id}` , {
                     method : 'PATCH' ,
                     headers: {
                         'Content-Type':'application/json' , 
@@ -50,26 +44,33 @@ const UpdateCarte = () => {
                     body : JSON.stringify(body)
                 })
                 data = await res.json();
-                //console.log(data);
-                
+
                 if(!res.ok){
-                    throw new Error('could not fetch the data for that resource.');
+                    throw new Error(data.message);
                 }
-                
-                setNom('');
+
+                const res2 = await fetch(`/api/carte/${data.id}`,{
+                    headers: {'Authorization': `Bearer ${user.token}`},
+                });
+                const newCarte = await res2.json();
+
+                if(!res2.ok){
+                    throw new Error(carte.message);
+                }
+
+
                 setAdresse('');
 
                 setIsPending(false);
                 setError(null);
 
-                dispatch({type:'SET_CARTE' , carte:data.carte});
+                dispatch({type:'SET_CARTE' , carte:newCarte});
 
             }
             catch(err){
                 console.error(err);
-                //console.log(data.errors);
                 setIsPending(false);
-                setError(data.errors);
+                setError(data.message);
             }
         }
 
@@ -79,6 +80,13 @@ const UpdateCarte = () => {
             setError({login:'if faut se connecter !'});
         } 
 
+    }
+
+    const findError = (field) => {
+        if (error) {
+            const items = error.includes(',') ?  error.split(',') : error;
+            return  items.filter(item => item.includes(field)).join(' / ');
+        }
     }
 
     return (
@@ -91,17 +99,17 @@ const UpdateCarte = () => {
                 onChange={(e)=>setNom(e.target.value)}
                 value={nom}
                 className={error?.nom ? 'error' : ''}
+                disabled={true}
             />
-            {error?.nom && <div className="error">{error.nom}</div> }
 
             <label>Adresse IP de Carte</label>
             <input 
                 type="text"
                 onChange={(e)=>setAdresse(e.target.value)}
-                value={adresse_ip}
-                className={error?.adresse_ip ? 'error' : ''}
+                value={adresseIp}
+                className={ findError('adresseIp') ? 'error' : ''}
             />
-            {error?.adresse_ip && <div className="error">{error.adresse_ip}</div> }
+            {error && findError('adresseIp') && <div className="error">{findError('adresseIp')}</div> }
 
             { !isPending &&  <button>Mettre à jour </button>}
             { isPending &&  <button className="LoadingButthon" disabled>
@@ -115,9 +123,6 @@ const UpdateCarte = () => {
                     </lord-icon>
                 </button>
             }
-
-            { error && error.login && <div className="error">{error.login}</div> }  
-            
         </form>
     );
 }

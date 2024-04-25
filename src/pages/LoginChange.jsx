@@ -18,8 +18,8 @@ const LoginChange = () => {
 
     const navigate = useNavigate();
 
-    const [mdp , setMdp] = useState('');
-    const [oldmdp , setOldMdp] = useState('');
+    const [password , setPassword] = useState('');
+    const [oldPassword , setOldPassword] = useState('');
 
     const [isHashed1, setIsHashed1] = useState(true);
     const [isHashed2, setIsHashed2] = useState(true);
@@ -38,14 +38,14 @@ const LoginChange = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const body = { oldmdp , mdp };
+        const body = { oldPassword , password };
 
         setIsPending(true);
 
         let data ;
         const UpdatePWD = async () => {
             try{
-                const res = await fetch('/api/user/login', {
+                const res = await fetch('/api/user', {
                     method : 'PUT' ,
                     headers: {
                         'Content-Type':'application/json' , 
@@ -56,11 +56,11 @@ const LoginChange = () => {
                 data = await res.json();
 
                 if(!res.ok){
-                    throw new Error('could not fetch the data for that resource.');
+                    throw new Error(data.message);
                 }
 
-                setOldMdp('');
-                setMdp('');
+                setOldPassword('');
+                setPassword('');
 
                 setIsPending(false);
                 setError(null);
@@ -70,12 +70,11 @@ const LoginChange = () => {
                 dispatch({ type: 'LOGOUT' });
 
                 navigate('/');
-                
             }
             catch(err){
                 console.error(err);
                 setIsPending(false);
-                setError(data.errors);
+                setError(err.message);
             }
         }
 
@@ -84,7 +83,13 @@ const LoginChange = () => {
         } else {
             setError({login:'if faut se connecter !'});
         }
-        
+    }
+
+    const findError = (field) => {
+        if (error) {
+            const items = error.split(',');
+            return  items.filter(item => item.includes(field)).join(' / ');
+        }
     }
 
     return (
@@ -96,9 +101,9 @@ const LoginChange = () => {
                 <div className="input-wrapper">
                     <input 
                         type={isHashed1 ? 'password' : 'text'} 
-                        onChange={(e)=>setOldMdp(e.target.value)}
-                        value={oldmdp}
-                        className={error?.oldmdp ? 'error' : ''}
+                        onChange={(e)=>setOldPassword(e.target.value)}
+                        value={oldPassword}
+                        className={findError('oldPassword') ? 'error' : ''}
                         autoComplete="off"
                     />
                     <div onClick={() => togglePasswordHashing(1)} className="visibility-icon">
@@ -109,7 +114,7 @@ const LoginChange = () => {
                         )}
                     </div>
                 </div>
-                {error?.oldmdp && <div className="error">{error.oldmdp}</div> }
+                {error && findError('oldPassword') && <div className="error">{findError('oldPassword')}</div> }
             </div>
 
             <div className="input-container">
@@ -117,9 +122,9 @@ const LoginChange = () => {
                 <div className="input-wrapper">
                     <input 
                         type={isHashed2 ? 'password' : 'text'} 
-                        onChange={(e)=>setMdp(e.target.value)}
-                        value={mdp}
-                        className={error?.mdp ? 'error' : ''}
+                        onChange={(e)=>setPassword(e.target.value)}
+                        value={password}
+                        className={findError('password') ? 'error' : ''}
                         autoComplete="off"
                     />
                     <div onClick={() => togglePasswordHashing(2)} className="visibility-icon">
@@ -130,7 +135,7 @@ const LoginChange = () => {
                         )}
                     </div>
                 </div>
-                {error?.mdp && <div className="error">{error.mdp}</div> }
+                {error && findError('password') && <div className="error">{findError('password')}</div> }
             </div>
 
             { !isPending &&  <button>Changer</button>}
@@ -145,8 +150,6 @@ const LoginChange = () => {
                     </lord-icon>
                 </button>
             }
-
-            { error && error.login && <div className="error">{error.login}</div> }  
 
         </form>
     );

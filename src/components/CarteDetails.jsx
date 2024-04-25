@@ -1,7 +1,8 @@
 import useCartesContext from "../hooks/useCartesContext";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import useAuthContext from "../hooks/useAuthContext";
+import {useMemo} from "react";
 
 const CarteDetails = ({carte}) => {
 
@@ -16,7 +17,7 @@ const CarteDetails = ({carte}) => {
         }
 
         try{
-            const res = await fetch(`/api/carte/${carte._id}`,{
+            const res = await fetch(`/api/carte/${carte.id}`,{
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -24,31 +25,34 @@ const CarteDetails = ({carte}) => {
             });
             const data = await res.json();
 
-            dispatch({type:'DELETE_CARTE' , carte:data.carte});
+            if(!res.ok){
+                throw new Error(data.message);
+            }
 
+            dispatch({type:'DELETE_CARTE' , carte:data[0]});
         }
         catch(err){
             console.error(err);
         }
     }
 
-    const nonZeroInputs = Object.values(carte.elementsConnectes).filter(value => value !== 0);
-    const uniqueNonZeroInputs = Array.from(new Set(nonZeroInputs));
-    const NbElements = uniqueNonZeroInputs.length;
+    const NbElements = useMemo(() => {
+        return carte.lampes.length + carte.stores.length;
+    }, [carte])
 
     return (  
         <div className="carte-details">
             <h4>{carte.nom}</h4>
-            <Link to={`/cartes/${carte._id}`} >
+            <Link to={`/cartes/${carte.id}`} >
                 <p>
                     <strong>Adrees IP de Carte :</strong>&nbsp;
                     <span className="material-symbols-outlined">alternate_email</span>&nbsp;
-                    {carte.adresse_ip}&nbsp;
+                    {carte.adresseIp}&nbsp;
                 </p>
                 <p>
                     <strong>Nombre Pins de Carte :</strong>&nbsp;
                     <span className="material-symbols-outlined">usb</span>&nbsp;
-                    {carte.nb_pins}&nbsp;
+                    {carte.nbPins}&nbsp;
                 </p>
                 <p>
                     <strong>Nombre des élements connectées:</strong>&nbsp;

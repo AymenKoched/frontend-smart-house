@@ -13,7 +13,7 @@ const Home = () => {
             </div>
 
             <div className="desc">
-                <p>Elite Robotique site , Smart House</p>
+                <p>Smart House application</p>
             </div>
 
         </div>

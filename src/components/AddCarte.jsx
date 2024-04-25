@@ -13,8 +13,8 @@ const AddCarte = () => {
     const { dispatch } = useCartesContext();
 
     const [nom,setNom] = useState('');
-    const [nb_pins,setNbPins] = useState('');
-    const [adresse_ip,setAdresse] = useState('');
+    const [nbPins,setNbPins] = useState();
+    const [adresseIp,setAdresse] = useState('');
 
     const [isPending,setIsPending] = useState(false);
     const [error,setError] = useState(null);
@@ -22,14 +22,13 @@ const AddCarte = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const body = {nom,nb_pins,adresse_ip};
+        const body = {nom,nbPins,adresseIp};
 
         setIsPending(true);
 
-        let data;
         const addData = async () => {
             try{
-                const res = await fetch('/api/carte/' , {
+                const res = await fetch('/api/carte' , {
                     method : 'POST' ,
                     headers: {
                         'Content-Type':'application/json' ,
@@ -37,12 +36,22 @@ const AddCarte = () => {
                     } , 
                     body : JSON.stringify(body)
                 })
-                data = await res.json();
-                //console.log(data);
-                
+                const data = await res.json();
+
                 if(!res.ok){
-                    throw new Error('could not fetch the data for that resource.');
+                    throw new Error(data.message);
                 }
+
+                const res2 = await fetch(`/api/carte/${data.id}`,{
+                    headers: {'Authorization': `Bearer ${user.token}`},
+                });
+                const carte = await res2.json();
+
+                if(!res2.ok){
+                    throw new Error(carte.message);
+                }
+
+                dispatch({type:'SET_CARTE', carte:carte });
                 
                 setNom('');
                 setNbPins('');
@@ -51,14 +60,13 @@ const AddCarte = () => {
                 setIsPending(false);
                 setError(null);
 
-                dispatch({type:'CREATE_CARTE' , carte:data.carte});
+                dispatch({type:'CREATE_CARTE' , carte:carte});
 
             }
             catch(err){
                 console.error(err);
-                //console.log(data.errors);
                 setIsPending(false);
-                setError(data.errors);
+                setError(err.message);
             }
         }
         
@@ -66,6 +74,13 @@ const AddCarte = () => {
             addData();
         } else {
             setError({login:'if faut se connecter !'});
+        }
+    }
+
+    const findError = (field) => {
+        if (error) {
+            const items = error.split(',');
+            return  items.filter(item => item.includes(field)).join(' / ');
         }
     }
 
@@ -78,27 +93,27 @@ const AddCarte = () => {
                 type="text" 
                 onChange={(e)=>setNom(e.target.value)}
                 value={nom}
-                className={error?.nom ? 'error' : ''}
+                className={findError('nom') ? 'error' : ''}
             />
-            {error?.nom && <div className="error">{error.nom}</div> }
+            {error && findError('nom') && <div className="error">{findError('nom')}</div> }
 
             <label>Nombre des pins</label>
             <input 
                 type="number"
                 onChange={(e)=>setNbPins(e.target.value)}
-                value={nb_pins}
-                className={error?.nb_pins ? 'error' : ''}
+                value={nbPins}
+                className={findError('nbPins') ? 'error' : ''}
             />
-            {error?.nb_pins && <div className="error">{error.nb_pins}</div> }
+            {error && findError('nbPins') && <div className="error">{findError('nbPins')}</div> }
 
             <label>Adresse IP de Carte</label>
             <input 
                 type="text"
                 onChange={(e)=>setAdresse(e.target.value)}
-                value={adresse_ip}
-                className={error?.adresse_ip ? 'error' : ''}
+                value={adresseIp}
+                className={findError('adresseIp') ? 'error' : ''}
             />
-            {error?.adresse_ip && <div className="error">{error.adresse_ip}</div> }
+            {error && findError('adresseIp') && <div className="error">{findError('adresseIp')}</div> }
 
             { !isPending &&  <button>Ajoute Carte</button>}
             { isPending &&  <button className="LoadingButthon" disabled>
@@ -112,9 +127,6 @@ const AddCarte = () => {
                     </lord-icon>
                 </button>
             }
-
-            { error && error.login && <div className="error">{error.login}</div> }   
-
         </form>
     );
 }

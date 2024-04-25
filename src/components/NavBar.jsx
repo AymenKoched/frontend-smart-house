@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom';
 import useAuthContext from '../hooks/useAuthContext';
-import { useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 const NavBar = () => {
-
     const { user , dispatch } = useAuthContext();
-
     const [showSidebar, setShowSidebar] = useState(false);
 
     const handlelogout = () => {
@@ -27,14 +25,14 @@ const NavBar = () => {
                 </span>
 
                 <Link to='/' >
-                    <h1>Elite Robotique</h1>
+                    <h1>Smart House</h1>
                 </Link>
                 
                 <nav>
 
                     { user && (
                         <div>
-                            Bienvenue <span>{user.nom}</span> !
+                            Bienvenue <span>{user.username}</span> !
                         </div>
                     )}
                     
@@ -66,6 +64,9 @@ const NavBar = () => {
             </div>
 
             <div className={`sidebar ${showSidebar ? "active" : ""}`}>
+                <span className="material-symbols-outlined sidebar-toggle" onClick={toggleSidebar}>
+                    menu
+                </span>
                 <nav>
                     <li><Link to="login-change">Changer mot de passe</Link></li>
                 </nav>
@@ -74,5 +75,5 @@ const NavBar = () => {
         </header>
     );
 }
- 
+
 export default NavBar;

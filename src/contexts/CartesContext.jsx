@@ -20,13 +20,13 @@ export const CartesReducer = (state,action) => {
         case 'CREATE_CARTE' :
             return{
                 ...state,
-                cartes : [...state.cartes , action.carte]
+                cartes : [action.carte, ...state.cartes]
             }
 
         case 'DELETE_CARTE':
             return{
                 ...state,
-                cartes : state.cartes.filter((carte) => carte._id !== action.carte._id)
+                cartes : state.cartes.filter((carte) => carte.id !== action.carte.id)
             }
 
         default :
@@ -48,7 +48,8 @@ export const CartesContextProvider = ({children}) => {
                 headers: {'Authorization': `Bearer ${user.token}`},
             });
             const data = await res.json();
-            const cartes = data.cartes;
+
+            const cartes = data;
             if(cartes){
                 dispatch({ type:'SET_CARTES' , cartes });
             }
