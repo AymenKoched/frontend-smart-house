@@ -49,17 +49,17 @@ const UpdateCarte = () => {
                     throw new Error(data.message);
                 }
 
-                const res2 = await fetch(`/api/carte/${data.id}`,{
+                const res2 = await fetch(`/api/carte/${carte.id}`,{
                     headers: {'Authorization': `Bearer ${user.token}`},
                 });
                 const newCarte = await res2.json();
 
                 if(!res2.ok){
-                    throw new Error(carte.message);
+                    throw new Error(newCarte.message);
                 }
 
 
-                setAdresse('');
+                setAdresse(carte.adresseIp);
 
                 setIsPending(false);
                 setError(null);

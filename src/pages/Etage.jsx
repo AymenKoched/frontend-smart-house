@@ -28,12 +28,13 @@ const Etage = () => {
                 const res = await fetch(`/api/etage/${id}`,{
                     headers: {'Authorization': `Bearer ${user.token}`},
                 });
-                if(!res.ok){
-                    throw Error('could not fetch the data for that resource.');
-                }
                 const data = await res.json();
 
-                dispatch({type:'SET_ETAGE', etage:data.etage });
+                if(!res.ok){
+                    throw new Error(data.message);
+                }
+
+                dispatch({type:'SET_ETAGE', etage:data });
 
                 setLampes(data.lampes);
                 setStores(data.stores);
@@ -43,9 +44,8 @@ const Etage = () => {
             }
             catch(err){
                 console.error(err);
-
-                setError(err.message);
                 setIsPending(false);
+                setError(err.message);
             }
         }
 
@@ -67,27 +67,26 @@ const Etage = () => {
                         <p>
                             <strong>Nombre des Chambres :</strong>&nbsp;
                             <span className="material-symbols-outlined">living</span>&nbsp;
-                            {etage.nb_chambres}&nbsp;
+                            {etage.nbChambres}&nbsp;
                         </p>
 
                         <p>
                             <strong>Nombre des Lampes :</strong>&nbsp;
                             <span className="material-symbols-outlined ">light</span>&nbsp;     
-                            {etage.nb_Lampes}&nbsp;
+                            {etage.lampes.length}&nbsp;
                         </p>
                         { lampes && lampes.map((lampe)=>(
-                            <LampeDetails key={lampe._id} lampe={lampe}/>
+                            <LampeDetails key={lampe.id} lampeId={lampe.id}/>
                         )) }
 
                         <p>
                             <strong>Nombre des Stores :</strong>&nbsp;
                             <span className="material-symbols-outlined">blinds</span>&nbsp;
-                            {etage.nb_stores}&nbsp;
+                            {etage.stores.length}&nbsp;
                         </p>
                         { stores && stores.map((store)=>(
-                            <StoresDeatails key={store._id} store={store} />
+                            <StoresDeatails key={store.id} storeId={store.id} />
                         )) }
-
                     </div>
                 )}
             </div>

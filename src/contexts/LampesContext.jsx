@@ -19,13 +19,13 @@ export const LampesReducer = (state,action) => {
         case 'CREATE_LAMPE' :
             return{
                 ...state,
-                lampes : [...state.lampes,action.lampe] 
+                lampes : [action.lampe, ...state.lampes]
             }
 
         case 'DELETE_LAMPE' :
             return{
                 ...state,
-                lampes : state.lampes.filter((lampe) => lampe._id !== action.lampe._id)
+                lampes : state.lampes.filter((lampe) => lampe.id !== action.lampe.id)
             }
 
         default :

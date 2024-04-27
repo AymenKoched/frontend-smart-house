@@ -20,13 +20,13 @@ export const EtagesReducer = (state,action) => {
         case 'CREATE_ETAGE' : 
             return {
                 ...state,
-                etages : [...state.etages,action.etage]
+                etages : [action.etage, ...state.etages]
             }
 
         case 'DELETE_ETAGE' :
             return {
                 ...state,
-                etages : state.etages.filter((etage) => etage._id !== action.etage._id)
+                etages : state.etages.filter((etage) => etage.id !== action.etage.id)
             }
 
         default :
@@ -47,7 +47,8 @@ export const EtagesContextProvider = ({children}) => {
                 headers: {'Authorization': `Bearer ${user.token}`},
             });
             const data = await res.json();
-            const etages = data.etages;
+
+            const etages = data;
             if(etages){
                 dispatch({ type:'SET_ETAGES' , etages });
             }

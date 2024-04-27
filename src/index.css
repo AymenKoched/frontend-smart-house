@@ -323,8 +323,6 @@ footer a {
     margin: 20px;
     padding: 20px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-    width: 400px; 
-    height: 320px; 
     display: inline-block; 
     vertical-align: top; 
 }

@@ -13,14 +13,14 @@ const UpdateEtage = () => {
     const { etage , dispatch } = useEtagesContext();
 
     const [nom,setNom] = useState('');
-    const [nb_chambres,setNbChambres] = useState('');
+    const [nbChambres,setNbChambres] = useState('');
 
     useEffect(()=>{
         if(etage){
             setNom(etage.nom);
-            setNbChambres(etage.nb_chambres);
+            setNbChambres(etage.nbChambres);
         }
-    },[etage])
+    },[etage]);
 
     const [isPending,setIsPending] = useState(false);
     const [error,setError] = useState(null);
@@ -28,20 +28,14 @@ const UpdateEtage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let body = {};
-        if (nom.trim() !== '') {
-            body.nom = nom;
-        }
-        if (nb_chambres !== 0) {
-            body.nb_chambres = nb_chambres;
-        }
+        let body = {nbChambres};
 
         setIsPending(true);
         
         let data;
         const PatchData = async () => {
             try{
-                const res = await fetch(`/api/etage/${etage._id}` , {
+                const res = await fetch(`/api/etage/${etage.id}` , {
                     method : 'PATCH' ,
                     headers: {
                         'Content-Type':'application/json' , 
@@ -50,26 +44,32 @@ const UpdateEtage = () => {
                     body : JSON.stringify(body)
                 })
                 data = await res.json();
-                //console.log(data);
-                
+
                 if(!res.ok){
-                    throw new Error('could not fetch the data for that resource.');
+                    throw new Error(data.message);
+                }
+
+                const res2 = await fetch(`/api/etage/${etage.id}`,{
+                    headers: {'Authorization': `Bearer ${user.token}`},
+                });
+                const newEtage = await res2.json();
+
+                if(!res2.ok){
+                    throw new Error(newEtage.message);
                 }
                 
-                setNom('');
-                setNbChambres('');
+                setNbChambres(newEtage.nbChambres);
 
                 setIsPending(false);
                 setError(null);
 
-                dispatch({type:'SET_ETAGE' , etage:data.etage});
+                dispatch({type:'SET_ETAGE' , etage:newEtage});
 
             }
             catch(err){
                 console.error(err);
-                //console.log(data.errors);
                 setIsPending(false);
-                setError(data.errors);
+                setError(data.message);
             }
         }
 
@@ -78,6 +78,13 @@ const UpdateEtage = () => {
         } else {
             setError({login:'if faut se connecter !'});
         } 
+    }
+
+    const findError = (field) => {
+        if (error) {
+            const items = error.includes(',') ?  error.split(',') : error;
+            return  items.filter(item => item.includes(field)).join(' / ');
+        }
     }
 
     return (  
@@ -90,17 +97,17 @@ const UpdateEtage = () => {
                 onChange={(e)=>setNom(e.target.value)}
                 value={nom}
                 className={error?.nom ? 'error' : ''}
+                disabled={true}
             />
-            {error?.nom && <div className="error">{error.nom}</div> }
 
             <label>Nombre de chambres</label>
             <input 
                 type="number"
                 onChange={(e)=>setNbChambres(e.target.value)}
-                value={nb_chambres}
-                className={error?.nb_chambres ? 'error' : ''}
+                value={nbChambres}
+                className={error?.nbChambres ? 'error' : ''}
             />
-            {error?.nb_chambres && <div className="error">{error.nb_chambres}</div> }
+            {error && findError('nbChambres') && <div className="error">{findError('nbChambres')}</div> }
 
             { !isPending &&  <button>Mettre à jour </button>}
             { isPending &&  <button className="LoadingButthon" disabled>
@@ -115,8 +122,7 @@ const UpdateEtage = () => {
                 </button>
             }
 
-            { error && error.login && <div className="error">{error.login}</div> }  
-        
+            { error && error.login && <div className="error">{error.login}</div> }
         </form>
     );
 }

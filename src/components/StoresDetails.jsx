@@ -1,11 +1,41 @@
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import useStoresContext from "../hooks/useStoresContext";
 import useAuthContext from "../hooks/useAuthContext";
+import {useEffect, useState} from "react";
 
-const StoresDeatails = ({store}) => {
+const StoresDeatails = ({storeId}) => {
 
     const { user } = useAuthContext();
     const { dispatch } = useStoresContext();
+
+    const [store, setStore] = useState();
+
+    const fetchStore = async () => {
+        if(!user){
+            return;
+        }
+        try{
+            const res = await fetch(`/api/store/${storeId}`,{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                } ,
+            });
+            const data = await res.json();
+
+            dispatch({type:'SET_STORE' , store:data});
+
+            setStore(data);
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        fetchStore();
+    }, []);
+
 
     const handleDelete = async (e) => {
         e.preventDefault();
@@ -15,14 +45,13 @@ const StoresDeatails = ({store}) => {
         }
 
         try{
-            const res = await fetch(`/api/store/${store._id}`,{
+            const res = await fetch(`/api/store/${store.id}`,{
                 method: 'DELETE',
                 headers: {'Authorization': `Bearer ${user.token}`}
             });
             const data = await res.json();
 
-            dispatch({type:'DELETE_STORE' , store:data.store});
-
+            dispatch({type:'DELETE_STORE' , store:data[0]});
         }
         catch(err){
             console.error(err);
@@ -37,13 +66,7 @@ const StoresDeatails = ({store}) => {
         }
     
         try{
-            const queryParams = new URLSearchParams();
-            queryParams.append('pin1', store.pin1);
-            queryParams.append('pin2', store.pin2);
-            queryParams.append('ip',store.carte.adresse_ip);
-            queryParams.append('delai',delai);
-
-            const res = await fetch(`/api/store/up?${queryParams.toString()}`,{
+            const res = await fetch(`/api/store/toggle/up/${delai}/${store.id}`,{
                 headers: {'Authorization': `Bearer ${user.token}`},
             });
             const data = await res.json();
@@ -62,13 +85,7 @@ const StoresDeatails = ({store}) => {
         }
 
         try{
-            const queryParams = new URLSearchParams();
-            queryParams.append('pin1', store.pin1);
-            queryParams.append('pin2', store.pin2);
-            queryParams.append('ip',store.carte.adresse_ip);
-            queryParams.append('delai',delai);
-
-            const res = await fetch(`/api/store/down?${queryParams.toString()}`,{
+            const res = await fetch(`/api/store/toggle/down/${delai}/${store.id}`,{
                 headers: {'Authorization': `Bearer ${user.token}`},
             });
             const data = await res.json();
@@ -79,31 +96,7 @@ const StoresDeatails = ({store}) => {
         }
     }
 
-    const handleSTOP = async (e) => {
-        e.preventDefault();
-
-        if(!user){
-            return
-        }
-    
-        try{
-            const queryParams = new URLSearchParams();
-            queryParams.append('pin1', store.pin1);
-            queryParams.append('pin2', store.pin2);
-            queryParams.append('ip',store.carte.adresse_ip);
-
-            const res = await fetch(`/api/store/stop?${queryParams.toString()}`,{
-                headers: {'Authorization': `Bearer ${user.token}`},
-            });
-            const data = await res.json();
-            console.log(data);
-        }
-        catch(err){
-            console.error(err);
-        }
-    }
-
-    return (  
+    return store ? (
         <div className="store-detail">
             <h4>{store.nom}</h4>
             <p>
@@ -146,14 +139,8 @@ const StoresDeatails = ({store}) => {
                     <span className="material-symbols-outlined">south</span>
                 </button>
             </div>
-            <div className="buttons">
-                <button className="error" onClick={handleSTOP}>
-                    Stop
-                    <span className="material-symbols-outlined">close</span>    
-                </button>
-            </div>
         </div>
-    );
+    ) : <></>;
 }
  
 export default StoresDeatails;

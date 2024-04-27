@@ -14,7 +14,7 @@ const AddEtage = () => {
     const { dispatch } = useEtagesContext();
 
     const [nom,setNom] = useState('');
-    const [nb_chambres,setNbChambres] = useState('');
+    const [nbChambres,setNbChambres] = useState();
 
     const [isPending,setIsPending] = useState(false);
     const [error,setError] = useState(null);
@@ -22,14 +22,13 @@ const AddEtage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const body = {nom,nb_chambres};
+        const body = {nom,nbChambres};
 
         setIsPending(true);
 
-        let data;
         const addData = async () => {
             try{
-                const res = await fetch('/api/etage/' , {
+                const res = await fetch('/api/etage' , {
                     method : 'POST' ,
                     headers: {
                         'Content-Type':'application/json' ,
@@ -37,27 +36,34 @@ const AddEtage = () => {
                     } , 
                     body : JSON.stringify(body)
                 })
-                data = await res.json();
-                //console.log(data);
-                
+                const data = await res.json();
+
                 if(!res.ok){
-                    throw new Error('could not fetch the data for that resource.');
+                    throw new Error(data.message);
                 }
-                
+
+                const res2 = await fetch(`/api/etage/${data.id}`,{
+                    headers: {'Authorization': `Bearer ${user.token}`},
+                });
+                const etage = await res2.json();
+
+                if(!res2.ok){
+                    throw new Error(etage.message);
+                }
+
+
                 setNom('');
-                setNbChambres('');
+                setNbChambres(0);
 
                 setIsPending(false);
                 setError(null);
 
-                dispatch({type:'CREATE_ETAGE' , etage:data.etage});
-
+                dispatch({type:'CREATE_ETAGE' , etage:etage});
             }
             catch(err){
                 console.error(err);
-                //console.log(data.errors);
                 setIsPending(false);
-                setError(data.errors);
+                setError(err.message);
             }
         }
 
@@ -65,6 +71,13 @@ const AddEtage = () => {
             addData();
         } else {
             setError({login:'if faut se connecter !'});
+        }
+    }
+
+    const findError = (field) => {
+        if (error) {
+            const items = error.split(',');
+            return  items.filter(item => item.includes(field)).join(' / ');
         }
     }
 
@@ -77,18 +90,18 @@ const AddEtage = () => {
                 type="text"
                 onChange={(e)=>setNom(e.target.value)}
                 value={nom}
-                className={error?.nom ? 'error' : ''}
+                className={findError('nom') ? 'error' : ''}
             />
-            {error?.nom && <div className="error">{error.nom}</div> }
+            {error && findError('nom') && <div className="error">{findError('nom')}</div> }
 
             <label>Nombre de chambres : </label>
             <input 
                 type="number"
-                onChange={(e)=>setNbChambres(e.target.value)}
-                value={nb_chambres}
-                className={error?.nb_chambres ? 'error' : ''}
+                onChange={(e)=>setNbChambres((e.target.value)) }
+                value={nbChambres}
+                className={findError('nbChambres') ? 'error' : ''}
             />
-            {error?.nb_chambres && <div className="error">{error.nb_chambres}</div> }
+            {error && findError('nbChambres') && <div className="error">{findError('nbChambres')}</div> }
 
             { !isPending &&  <button>Ajoute Etage</button>}
             { isPending &&  <button className="LoadingButthon" disabled>

@@ -4,6 +4,7 @@ import useAuthContext from "../hooks/useAuthContext";
 
 import lottie from 'lottie-web';
 import { defineElement } from 'lord-icon-element';
+import Login from "../pages/Login";
 // define "lord-icon" custom element with default properties
 defineElement(lottie.loadAnimation);
 
@@ -23,6 +24,7 @@ const AddCarte = () => {
         e.preventDefault();
 
         const body = {nom,nbPins,adresseIp};
+        console.log({body})
 
         setIsPending(true);
 
@@ -54,7 +56,7 @@ const AddCarte = () => {
                 dispatch({type:'SET_CARTE', carte:carte });
                 
                 setNom('');
-                setNbPins('');
+                setNbPins(0);
                 setAdresse('');
 
                 setIsPending(false);
@@ -127,6 +129,8 @@ const AddCarte = () => {
                     </lord-icon>
                 </button>
             }
+
+            { error && error.login && <div className="error">{error.login}</div> }
         </form>
     );
 }

@@ -19,13 +19,13 @@ export const StoresReducer = (state,action) => {
         case 'CREATE_STORE' :
             return{
                 ...state,
-                stores : [...state.stores,action.store] 
+                stores : [action.store, ...state.stores]
             }
 
         case 'DELETE_STORE' :
             return{
                 ...state,
-                stores : state.stores.filter((store) => store._id !== action.store._id)
+                stores : state.stores.filter((store) => store.id !== action.store.id)
             }
 
         default :

@@ -16,7 +16,7 @@ const EtageDetails = ({ etage }) => {
         }
         
         try{
-            const res = await fetch(`/api/etage/${etage._id}`,{
+            const res = await fetch(`/api/etage/${etage.id}`,{
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -24,7 +24,7 @@ const EtageDetails = ({ etage }) => {
             });
             const data = await res.json();
 
-            dispatch({type:'DELETE_ETAGE' , etage:data.etage});
+            dispatch({type:'DELETE_ETAGE' , etage:data[0]});
 
         }
         catch(err){
@@ -35,21 +35,21 @@ const EtageDetails = ({ etage }) => {
     return (  
         <div className="etage-detail">
             <h4>{etage.nom}</h4>
-            <Link to={`/etages/${etage._id}`}>
+            <Link to={`/etages/${etage.id}`}>
                 <p>
                     <strong>Nombre des Chambres :</strong>&nbsp;
                     <span className="material-symbols-outlined">living</span>&nbsp;
-                    {etage.nb_chambres}&nbsp;
+                    {etage.nbChambres}&nbsp;
                 </p>
                 <p>
                     <strong>Nombre des Lampes :</strong>&nbsp;
                     <span className="material-symbols-outlined ">light</span>&nbsp;     
-                    {etage.nb_Lampes}&nbsp;
+                    {etage.lampes.length}&nbsp;
                 </p>
                 <p>
                     <strong>Nombre des Stores :</strong>&nbsp;
                     <span className="material-symbols-outlined">blinds</span>&nbsp;
-                    {etage.nb_stores}&nbsp;
+                    {etage.stores.length}&nbsp;
                 </p>
                 <p>{formatDistanceToNow(new Date(etage.createdAt) , {addSuffix:true} )}</p>
                 <span className="material-symbols-outlined delete" onClick={handleDelete} >delete</span>

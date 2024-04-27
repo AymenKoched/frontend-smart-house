@@ -22,19 +22,19 @@ const Etages = () => {
                 const res = await fetch('/api/etage',{
                     headers: {'Authorization': `Bearer ${user.token}`},
                 });
-                if(!res.ok){
-                    throw Error('could not fetch the data for that resource.');
-                }
                 const data = await res.json();
 
-                dispatch({ type: 'SET_ETAGES' , etages:data.etages});
+                if(!res.ok){
+                    throw new Error(data.message);
+                }
+
+                dispatch({ type: 'SET_ETAGES' , etages:data});
 
                 setIsPending(false);
                 setError(null);
             }
             catch(err){
                 console.error(err);
-
                 setIsPending(false);
                 setError(err.message);
             }
@@ -55,7 +55,7 @@ const Etages = () => {
                 { isPending && <div>Chargement... </div> }
                 { etages && etages.length === 0 && <div>Pas d'etages à afficher.</div> }
                 { etages && etages.map((etage)=>(
-                    <EtageDetails key={etage._id} etage={etage} />
+                    <EtageDetails key={etage.id} etage={etage} />
                 )) }
             </div>
 

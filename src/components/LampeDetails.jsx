@@ -1,11 +1,41 @@
 import useAuthContext from "../hooks/useAuthContext";
 import useLampesContext from "../hooks/useLampesContext";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import {da} from "date-fns/locale";
+import {useEffect, useState} from "react";
 
-const LampeDetails = ({ lampe }) => {
+const LampeDetails = ({ lampeId }) => {
 
     const { user } = useAuthContext();
     const { dispatch } = useLampesContext();
+
+    const [lampe, setLampe] = useState();
+
+    const fetchLampe = async () => {
+        if(!user){
+            return;
+        }
+        try{
+            const res = await fetch(`/api/lampe/${lampeId}`,{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                } ,
+            });
+            const data = await res.json();
+
+            dispatch({type:'SET_LAMPE' , lampe:data});
+
+            setLampe(data);
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        fetchLampe();
+    }, []);
 
     const handleDelete = async (e) => {
         e.preventDefault();
@@ -13,9 +43,9 @@ const LampeDetails = ({ lampe }) => {
         if(!user){
             return
         }
-        
+
         try{
-            const res = await fetch(`/api/lampe/${lampe._id}`,{
+            const res = await fetch(`/api/lampe/${lampe.id}`,{
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -23,7 +53,7 @@ const LampeDetails = ({ lampe }) => {
             });
             const data = await res.json();
 
-            dispatch({type:'DELETE_LAMPE' , lampe:data.lampe});
+            dispatch({type:'DELETE_LAMPE' , lampe:data[0]});
 
         }
         catch(err){
@@ -39,11 +69,7 @@ const LampeDetails = ({ lampe }) => {
         }
 
         try{
-            const queryParams = new URLSearchParams();
-            queryParams.append('pin', lampe.pin);
-            queryParams.append('ip',lampe.carte.adresse_ip);
-
-            const res = await fetch(`/api/lampe/on?${queryParams.toString()}`,{
+            const res = await fetch(`/api/lampe/toggle/on/${lampe.id}`,{
                 headers: {'Authorization': `Bearer ${user.token}`},
             });
             const data = await res.json();
@@ -62,11 +88,7 @@ const LampeDetails = ({ lampe }) => {
         }
     
         try{
-            const queryParams = new URLSearchParams();
-            queryParams.append('pin', lampe.pin);
-            queryParams.append('ip',lampe.carte.adresse_ip);
-
-            const res = await fetch(`/api/lampe/off?${queryParams.toString()}`,{
+            const res = await fetch(`/api/lampe/toggle/off/${lampe.id}`,{
                 headers: {'Authorization': `Bearer ${user.token}`},
             });
             const data = await res.json();
@@ -77,18 +99,18 @@ const LampeDetails = ({ lampe }) => {
         }
     }
 
-    return (  
+    return lampe ? (
         <div className="lampe-detail">
             <h4>{lampe.nom}</h4>
             <p>
                 <strong>Etage de lampe :</strong>&nbsp;
                 <span className="material-symbols-outlined icon">apartment</span>&nbsp;
-                {lampe.etage.nom}&nbsp;
+                {lampe.etage.nom && lampe.etage.nom}&nbsp;
             </p>
             <p>
                 <strong>Carte de Lampe :</strong>&nbsp;
-                <span className="material-symbols-outlined icon">memory</span>&nbsp;   
-                {lampe.carte.nom}&nbsp;
+                <span className="material-symbols-outlined icon">memory</span>&nbsp;
+                {lampe.carte.nom && lampe.carte.nom}&nbsp;
             </p>
             <p>
                 <strong>Pin de Lampe :</strong>&nbsp;
@@ -108,7 +130,7 @@ const LampeDetails = ({ lampe }) => {
                 </button>
             </div>
         </div>
-    );
+    ) : <></> ;
 }
  
 export default LampeDetails;
