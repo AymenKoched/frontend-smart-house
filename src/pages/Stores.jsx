@@ -23,19 +23,19 @@ const Stores = () => {
                 const res = await fetch('/api/store',{
                     headers: {'Authorization': `Bearer ${user.token}`},
                 });
-                if(!res.ok){
-                    throw Error('could not fetch the data for that resource.');
-                }
                 const data = await res.json();
 
-                dispatch({ type: 'SET_STORES' , stores:data.stores});
+                if(!res.ok){
+                    throw new Error(data.message);
+                }
+
+                dispatch({ type: 'SET_STORES' , stores:data});
 
                 setIsPending(false);
                 setError(null);
             }
             catch(err){
                 console.error(err);
-
                 setIsPending(false);
                 setError(err.message);
             }
@@ -56,7 +56,7 @@ const Stores = () => {
                 { isPending && <div>Chargement... </div> }
                 { stores && stores.length === 0 && <div>Pas de stores à afficher.</div> }
                 { stores && stores.map((store)=>(
-                    <StoresDeatails key={store._id} store={store} />
+                    <StoresDeatails key={store.id} storeId={store.id} />
                 )) }
             </div>
 

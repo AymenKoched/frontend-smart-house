@@ -17,9 +17,9 @@ const AddLampe = () => {
     const { user } = useAuthContext();
 
     const [nom,setNom] = useState('');
-    const [etage,setEtage] = useState('');
-    const [carte,setCarte] = useState('');
-    const [pin,setPin] = useState('');
+    const [etageId,setEtageId] = useState('');
+    const [carteId,setCarteId] = useState('');
+    const [pin,setPin] = useState();
 
     const [isPending,setIsPending] = useState(false);
     const [error,setError] = useState(null);
@@ -27,15 +27,13 @@ const AddLampe = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const body = { nom , etage , carte , pin };
-        //console.log(body);
+        const body = { nom , etageId , carteId , pin };
 
         setIsPending(true);
 
-        let data;
         const addData = async () => {
             try{
-                const res = await fetch('/api/lampe/' , {
+                const res = await fetch('/api/lampe' , {
                     method : 'POST' ,
                     headers: {
                         'Content-Type':'application/json' ,
@@ -43,29 +41,36 @@ const AddLampe = () => {
                     } , 
                     body : JSON.stringify(body)
                 })
-                data = await res.json();
-                console.log(data);
-                
+                const data = await res.json();
+
                 if(!res.ok){
-                    throw new Error('could not fetch the data for that resource.');
+                    throw new Error(data.message);
+                }
+
+                const res2 = await fetch(`/api/lampe/${data.id}`,{
+                    headers: {'Authorization': `Bearer ${user.token}`},
+                });
+                const lampe = await res2.json();
+
+                if(!res2.ok){
+                    throw new Error(lampe.message);
                 }
                 
                 setNom('');
-                setEtage('');
-                setCarte('');
-                setPin('');
+                setEtageId('');
+                setCarteId('');
+                setPin(0);
 
                 setIsPending(false);
                 setError(null);
 
-                dispatch({type:'CREATE_LAMPE' , lampe:data.lampe});
+                dispatch({type:'CREATE_LAMPE' , lampe:lampe});
 
             }
             catch(err){
                 console.error(err);
-                console.log(data.errors);
                 setIsPending(false);
-                setError(data.errors);
+                setError(err.message);
             }
         }
 
@@ -74,6 +79,13 @@ const AddLampe = () => {
         } else {
             setError({login:'if faut se connecter !'});
         }      
+    }
+
+    const findError = (field) => {
+        if (error) {
+            const items = error.split(',');
+            return  items.filter(item => item.includes(field)).join(' / ');
+        }
     }
 
     return (  
@@ -85,40 +97,36 @@ const AddLampe = () => {
                 type="text" 
                 onChange={(e)=>setNom(e.target.value)}
                 value={nom}
-                className={error?.nom ? 'error' : ''}
+                className={findError('nom') ? 'error' : ''}
             />
-            {error?.nom && <div className="error">{error.nom}</div> }
-
+            {error && findError('nom') && <div className="error">{findError('nom')}</div> }
 
             <label>Etage</label>
-            <select name="etage" id="etage" value={etage} onChange={(e)=>setEtage(e.target.value)} className={error?.etage ? 'error' : ''}>
+            <select className={findError('etageId') ? 'error' : ''} name="etage" id="etage" value={etageId} onChange={(e)=>setEtageId(e.target.value)}>
                 <option value=""></option>
                 { etages && etages.map(etage => (
-                    <option key={etage._id} value={etage._id}>{etage.nom}</option>
+                    <option key={etage.id} value={etage.id}>{etage.nom}</option>
                 ))}
             </select>
-            {error?.etage && <div className="error">{error.etage}</div> }
-
+            {error && findError('etageId') && <div className="error">{findError('etageId')}</div> }
 
             <label>Carte</label>
-            <select name="carte" id="carte" value={carte} onChange={(e)=>setCarte(e.target.value)} className={error?.carte ? 'error' : ''}>
+            <select className={findError('carteId') ? 'error' : ''} name="carte" id="carte" value={carteId} onChange={(e)=>setCarteId(e.target.value)} >
                 <option value=""></option>
                 { cartes && cartes.map(carte => (
-                    <option key={carte._id} value={carte._id}>{carte.nom}</option>
+                    <option key={carte.id} value={carte.id}>{carte.nom}</option>
                 ))}
             </select>
-            {error?.carte && <div className="error">{error.carte}</div> }
-
+            {error && findError('carteId') && <div className="error">{findError('carteId')}</div> }
 
             <label>Pin dans Carte</label>
             <input 
                 type="number"
                 onChange={(e)=>setPin(e.target.value)}
                 value={pin}
-                className={error?.pin ? 'error' : ''}
+                className={findError('pin') ? 'error' : ''}
             />
-            {error?.pin && <div className="error">{error.pin}</div> }
-
+            {error && findError('pin') && <div className="error">{findError('pin')}</div> }
 
             { !isPending &&  <button>Ajoute Lampe</button>}
             { isPending &&  <button className="LoadingButthon" disabled>

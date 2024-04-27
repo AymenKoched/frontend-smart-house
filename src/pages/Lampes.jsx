@@ -22,19 +22,19 @@ const Lampes = () => {
                 const res = await fetch('/api/lampe',{
                     headers: {'Authorization': `Bearer ${user.token}`},
                 });
-                if(!res.ok){
-                    throw Error('could not fetch the data for that resource.');
-                }
                 const data = await res.json();
 
-                dispatch({ type: 'SET_LAMPES' , lampes:data.lampes});
+                if(!res.ok){
+                    throw new Error(data.message);
+                }
+
+                dispatch({ type: 'SET_LAMPES' , lampes:data});
 
                 setIsPending(false);
                 setError(null);
             }
             catch(err){
                 console.error(err);
-
                 setIsPending(false);
                 setError(err.message);
             }
@@ -55,7 +55,7 @@ const Lampes = () => {
                 { isPending && <div>Chargement... </div> }
                 { lampes && lampes.length === 0 && <div>Pas de lampes à afficher.</div> }
                 { lampes && lampes.map((lampe)=>(
-                    <LampeDetails key={lampe._id} lampe={lampe}/>
+                    <LampeDetails key={lampe.id} lampeId={lampe.id}/>
                 )) }
             </div>
 
