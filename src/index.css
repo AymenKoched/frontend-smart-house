@@ -32,6 +32,11 @@ header a {
     color: #333;
     text-decoration: none;
 }
+header img {
+    width: 100px;
+    height: 100px;
+
+}
 
 .pages{
     max-width: 1400px;
@@ -128,11 +133,36 @@ footer a {
 .home {
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 20px;
 }
 
-.home img{
+.home img {
     width: 250px;
-    margin-right: 40px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.desc p {
+    border-right: 2px solid;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 6s steps(40, end), blink-caret 0.75s step-end infinite;
+    margin: 0; 
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: black }
 }
 
 /* etages */

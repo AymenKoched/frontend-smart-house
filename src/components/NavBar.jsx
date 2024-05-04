@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import useAuthContext from '../hooks/useAuthContext';
+import logo from "../images/logo.png";
 import {useEffect, useRef, useState} from 'react';
 
 const NavBar = () => {
@@ -23,7 +24,9 @@ const NavBar = () => {
                 <span className="material-symbols-outlined sidebar-toggle" onClick={toggleSidebar}>
                     menu
                 </span>
-
+                <Link to='/' >
+                    <img src={logo} alt="Smart House Logo" />
+                </Link>
                 <Link to='/' >
                     <h1>Smart House</h1>
                 </Link>
